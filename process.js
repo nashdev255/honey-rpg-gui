@@ -1,16 +1,5 @@
 'use strict';
 
-/* フォントの大きさ */
-const FONT_SIZE = "48px monospace";
-
-/* ゲーム画面の大きさ */
-const SCREEN_WIDTH  = 128;
-const SCREEN_HEIGHT = 120;
-
-/* フレームレート、周期 */
-const FRAME_RATE = 60;
-const PERIOD_MS = 1000 / FRAME_RATE;
-
 /* 画像 */
 let mapImage;
 
@@ -74,20 +63,3 @@ const onChangeScreenSize = () => {
     setCanvasSize();
   });
 }
-
-window.onload = () => {
-  /* 画像読み込み */
-  mapImage = new Image();
-  mapImage.src = './assets/map.png';
-
-  /* 仮想画面の初期化 */
-  screen = document.createElement('canvas');
-  screen.height = SCREEN_HEIGHT;
-  screen.width  = SCREEN_WIDTH;
-
-  setCanvasSize();
-  onChangeScreenSize();
-
-  /* 1フレームごとにupdate()する */
-  setInterval(() => update(), PERIOD_MS);
-};
