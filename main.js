@@ -2,6 +2,8 @@
 
 /* フォントサイズ */
 const FONT_SIZE = "48px monospace";
+const SCREEN_HEIGHT = 120;
+const SCREEN_WIDTH  = 128;
 
 /* フレームレート、周期 */
 const FRAME_RATE = 60;
@@ -12,12 +14,12 @@ let mapImage;
 
 /* 描画 */
 let canvas;
-let display;
+let screen;
 
 /* フレーム数 */
 let displayFrame = 0;
 
-const initCanvas = () => {
+const setCanvasSize = () => {
   canvas = document.getElementById('main');
 
   /* キャンバスの大きさを画面に合わせる */
@@ -25,33 +27,53 @@ const initCanvas = () => {
   canvas.height = window.innerHeight;
 }
 
-const initDisplay = () => {
-  display = canvas.getContext('2d');
-  display.font = FONT_SIZE;
-}
+const drawMain = () => {
+  const display = screen.getContext('2d');
 
-const WmPaint = () => {
-  for ( let y = 0; y < 32 ; y++ ) {
-    for ( let x = 0; x < 48; x++ ) {
+  for ( let y = 0; y < 32; y++ ) {
+    for ( let x = 0; x < 64; x++ ) {
       display.drawImage(mapImage, x*32, y*32);
     }
   }
 
-  display.fillText('Hello World' + displayFrame, 0, 48);
+  display.font = FONT_SIZE;
+  display.fillText(displayFrame, 0, 48);
 }
 
-/* フレームごとに */
+const draw = () => {
+  drawMain();
+  const display = canvas.getContext('2d');
+  /* 仮想画面のイメージを実画面へ転送 */
+  display.drawImage(
+    screen, 0, 0,
+    screen.width, screen.height, 0, 0,
+    canvas.width,
+    canvas.height
+  );
+}
+
+/**
+ * フレームごとに実行する処理
+ */
 const update = () => {
   displayFrame++;
-  WmPaint();
+  draw();
 }
 
 window.onload = () => {
+  /* 画像読み込み */
   mapImage = new Image();
-  mapImage.src = './assets/map.png'
+  mapImage.src = './assets/map.png';
 
-  initCanvas();
-  initDisplay();
+  /* 仮想画面の初期化 */
+  screen = document.createElement('canvas');
+  screen.height = SCREEN_HEIGHT;
+  screen.width  = SCREEN_WIDTH;
 
+  setCanvasSize();
+  /* 画面サイズの変更時に画面サイズを更新する */
+  window.addEventListener('resize', () => setCanvasSize());
+
+  /* 1フレームごとにupdate()する */
   setInterval(() => update(), PERIOD_MS);
 };
